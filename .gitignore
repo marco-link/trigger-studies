@@ -1,0 +1,28 @@
+# files with following patterns will be ignored from git
+
+# ignores gedit-backups
+*~
+# ignore pycache
+__pycache__
+# ignore python-compiled
+*.pyc
+# temp latex files
+*.dblite
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fls
+*.log
+*.out
+*.run.xml
+*.toc
+*.lof
+*.bib.*
+*.synctex.gz
+*.root
+*.nav
+*.snm
+
+*.pdf
+*.root
