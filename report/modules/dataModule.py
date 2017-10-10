@@ -101,10 +101,29 @@ def save(dtset, event, header, mask):
     f.close()
 
 
+def getRunlist(data):
+    runlist = pandas.Series(data['run'].values.ravel()).unique()
+    return numpy.sort(runlist)
+
+
 def printRunlist(data):
-    runlist = []
-    for x in data['run']:
-        if not x in runlist:
-            runlist.append(x)
-    runlist = numpy.sort(runlist)
-    print('runlist:\n', runlist)
+    print('runlist:\n', getRunlist(data))
+
+
+def getLumi(data, path='data/lumi.csv'):
+    runlist = getRunlist(data)
+    lumilist = pandas.read_csv(path, sep=',', header=0, comment='#')
+    lumilist['run'], lumilist['fill'] = lumilist['run:fill'].str.split(':', 1).str
+    lumi = 0
+
+    for run in runlist:
+        l = lumilist['recorded(/ub)'][lumilist['run'].astype(int) == run].values
+
+        if len(l)==1:
+            lumi = lumi + l[0]/1e9
+        else:
+            print('ERROR: run {} not found in lumilist, luminosity calculation aborted'.format(run))
+            return -1
+
+    print('luminosity in 1/fb: {:.3f}'.format(lumi))
+    return lumi

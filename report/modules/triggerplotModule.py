@@ -10,6 +10,8 @@ import scipy.interpolate
 import scipy.stats
 import scipy.special
 
+import modules.dataModule
+
 def clearfile(path):
     # delete file at beginning
     f = open(path, 'w')
@@ -97,9 +99,10 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
     for trig in trigger:
         for dtset in dataset['sets']:
             x, y, sigma = getEfficiency(data[data[dataset['key']] == dtset], trig, quant, dataset['denom'])
+            lumi = modules.dataModule.getLumi(data[data[dataset['key']] == dtset])
 
             if not(numpy.sum(y)==0):
-                col = p1.errorbar(x, y, yerr=sigma, fmt='.', label='{}\n{}'.format(trig, dtset), capsize=2)[0].get_color()
+                col = p1.errorbar(x, y, yerr=sigma, fmt='.', label='{}\n{} ({:.2f} fb$^{{-1}}$)'.format(trig, dtset, lumi), capsize=2)[0].get_color()
                 if(fit):
                     xfit, yfit, label, success, p, perr, c = doFit(x, y, sigma, x0=x0)
                     if (success):
@@ -215,6 +218,7 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     # apply denominator & filter datasets
     data = data[data[denominator] == 1]
     data = data[data[dataset['key']].isin(datasets).values]
+    lumi = modules.dataModule.getLumi(data[data[dataset['key']].isin(datasets).values])
     denominatorentries = numpy.histogram2d(data[quant1['key']], data[quant2['key']], bins=[bins1, bins2])[0]
     entries = numpy.histogram2d(data[quant1['key']][data[trigger]==1], data[quant2['key']][data[trigger]==1], bins=[bins1, bins2])[0]
 
@@ -238,7 +242,7 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
         p1.set_title('{} ({})'.format(trigger.replace('_v', ''), mask))
     p1.set_xlabel(quant1['label'])
     p1.set_ylabel(quant2['label'])
-    p1.text(0.01, 0.99, 'denominator: {}\ndatasets: {}'.format(denominator.replace('_', ' '), ', '.join(datasets)), verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, color='r')
+    p1.text(0.01, 0.99, 'denominator: {}\ndatasets: {} ({:.2f} fb$^{{-1}}$)'.format(denominator.replace('_', ' '), ', '.join(datasets), lumi), verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, color='r')
 
     p1.set_xlim(quant1['limits'][0], quant1['limits'][1])
     p1.set_ylim(quant2['limits'][0], quant2['limits'][1])
