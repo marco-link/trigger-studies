@@ -91,15 +91,18 @@ def getEfficiency(data, trigger, quant, denominator):
 
 def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000], mask=''):
     data = dataset['data']
+    lumis = []
+    for dtset in dataset['sets']:
+        lumis.append(modules.dataModule.getLumi(data[data[dataset['key']] == dtset]))
+
     if not mask=='':
         data = data[data[mask] == 1]
 
     fig = matplotlib.pyplot.figure(figsize=(10, 6))
     p1 = fig.add_subplot(111)
     for trig in trigger:
-        for dtset in dataset['sets']:
+        for dtset, lumi in zip(dataset['sets'], lumis):
             x, y, sigma = getEfficiency(data[data[dataset['key']] == dtset], trig, quant, dataset['denom'])
-            lumi = modules.dataModule.getLumi(data[data[dataset['key']] == dtset])
 
             if not(numpy.sum(y)==0):
                 col = p1.errorbar(x, y, yerr=sigma, fmt='.', label='{}\n{} ({:.2f} fb$^{{-1}}$)'.format(trig, dtset, lumi), capsize=2)[0].get_color()
@@ -201,10 +204,12 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
 def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     data = dataset['data']
-    if not mask=='':
-        data = data[data[mask] == 1]
     datasets = dataset['sets']
     denominator = dataset['denom']
+    lumi = modules.dataModule.getLumi(data[data[dataset['key']].isin(datasets).values])
+    if not mask=='':
+        data = data[data[mask] == 1]
+
 
     # define bins
     width1 = quant1['limits'][2]
@@ -218,7 +223,6 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     # apply denominator & filter datasets
     data = data[data[denominator] == 1]
     data = data[data[dataset['key']].isin(datasets).values]
-    lumi = modules.dataModule.getLumi(data[data[dataset['key']].isin(datasets).values])
     denominatorentries = numpy.histogram2d(data[quant1['key']], data[quant2['key']], bins=[bins1, bins2])[0]
     entries = numpy.histogram2d(data[quant1['key']][data[trigger]==1], data[quant2['key']][data[trigger]==1], bins=[bins1, bins2])[0]
 
