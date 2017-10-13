@@ -1,0 +1,46 @@
+\documentclass[presentation, shownotes]{beamer}
+\usetheme{CambridgeUS}% Singapore, Boadilla, CambridgeUS
+%\usecolortheme{crane}
+
+% change font to Latin Modern
+\renewcommand{\familydefault}{lmtt}
+
+%\bibliography{lit.bib}
+
+
+
+\title{example report}
+\subtitle{}
+\author{this could be your name}
+\institute{}
+\date{\today}
+
+
+%% -----------------------
+%% |    Main Document    |
+%% -----------------------
+\begin{document}
+\frame[plain, noframenumbering]{
+\maketitle
+}
+
+
+\frame[allowframebreaks]{
+\frametitle{Inhalt}
+\tableofcontents
+}
+
+\input{SingleMuon.tex}
+
+\appendix
+\section{Backup}
+\frame[plain, noframenumbering]{
+\begin{beamercolorbox}[center]{section}
+	\insertsection\par
+\end{beamercolorbox}
+}
+
+\subsection{Single Muon example dataset}
+\input{SingleMuon_appendix.tex}
+
+\end{document}

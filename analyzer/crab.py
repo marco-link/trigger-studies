@@ -17,7 +17,7 @@ import datetime
 #dataset = ['JetHT', 'Run2017D-PromptReco-v1']
 #dataset = ['JetHT', 'Run2017E-PromptReco-v1']
 
-name = 'TriggerStudies-{}-{}'.format(*dataset)
+name = 'TriggerStudies-{}-{}'.format(*dataset) # name of the task
 
 config = config()
 config.General.requestName = name
