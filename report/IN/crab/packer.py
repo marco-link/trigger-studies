@@ -5,7 +5,7 @@ import os
 import numpy
 import pandas
 
-dataset = 'Sync(nofilter)'
+dataset = 'SingleMuon'
 
 for path in os.listdir('.'):
     if not '.' in path:
