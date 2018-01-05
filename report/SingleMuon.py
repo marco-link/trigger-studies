@@ -67,13 +67,15 @@ data['menu'] = data['menu'].mask(numpy.logical_and(data['run'].values <= 302019,
 data['menu'] = data['menu'].mask(numpy.logical_and(data['run'].values <= 302479, data['run'].values >= 302026), other='menu_2017_v3')
 
 
-runs = {'data': data, 'label': 'SingleMuon', 'key': 'runs', 'sets': ['RunB', 'RunC', 'RunD', 'RunE', 'RunF'], 'denom': 'Mu50_OR_IsoMu27'}
+runs = {'data': data, 'label': 'SingleMuon', 'key': 'runs', 'sets': ['RunB', 'RunC', 'RunD', 'RunE', 'RunF', 'RunG', 'RunH'], 'denom': 'Mu50_OR_IsoMu27'}
 data['runs'] = data['dataset']
 data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 299329, data['run'].values >= 297046), other='RunB')
 data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 302029, data['run'].values >= 299368), other='RunC')
 data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 302663, data['run'].values >= 302031), other='RunD')
 data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 304797, data['run'].values >= 303572), other='RunE')
 data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 306138, data['run'].values >= 305040), other='RunF')
+data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 306657, data['run'].values >= 306526), other='RunG')
+data['runs'] = data['runs'].mask(numpy.logical_and(data['run'].values <= 307082, data['run'].values >= 306896), other='RunH')
 
 
 

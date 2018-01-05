@@ -9,7 +9,8 @@ import datetime
 #dataset = ['SingleMuon', 'Run2017D-PromptReco-v1']
 #dataset = ['SingleMuon', 'Run2017E-PromptReco-v1']
 #dataset = ['SingleMuon', 'Run2017F-PromptReco-v1']
-
+#dataset = ['SingleMuon', 'Run2017G-PromptReco-v1']
+#dataset = ['SingleMuon', 'Run2017H-PromptReco-v1']
 
 #dataset = ['JetHT', 'Run2017B-PromptReco-v1']
 #dataset = ['JetHT', 'Run2017B-PromptReco-v2']
@@ -34,7 +35,7 @@ config.JobType.outputFiles = ['fakeroot_csv.root']
 config.Data.splitting = 'LumiBased'
 config.Data.inputDataset=   '/{}/{}/MINIAOD'.format(*dataset)
 
-config.Data.lumiMask= '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-305185_13TeV_PromptReco_Collisions17_JSON.txt'
+config.Data.lumiMask= '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt'
 config.Data.unitsPerJob = 30
 #config.Data.totalUnits = config.Data.unitsPerJob * 100
 
