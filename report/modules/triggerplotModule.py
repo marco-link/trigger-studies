@@ -136,10 +136,10 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
 
 
 def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
-    # only fit on efficiency > 0.6 on last entries connected
+    # only fit on efficiency > 0.8 on last entries connected
     mask = []
     y = True
-    for x in numpy.flip(ydata > 0.6, 0):
+    for x in numpy.flip(ydata > 0.8, 0):
         if not x:
             y = False
         mask.append(y)
