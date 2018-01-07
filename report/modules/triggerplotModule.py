@@ -238,7 +238,7 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     cmap = matplotlib.pyplot.get_cmap('viridis')
     cmap.set_bad(color='w', alpha=0.8)
 
-    fig.colorbar(p1.pcolormesh(bins1, bins2, eff.T, vmin=0, vmax=1, cmap=cmap))
+    fig.colorbar(p1.pcolormesh(bins1, bins2, eff.T, vmin=0, cmap=cmap))
 
     if mask == '':
         p1.set_title('{}'.format(trigger.replace('_v', '')))
