@@ -14,6 +14,7 @@ def getData(dataset, limits=None):
     data = []
 
     infiles = os.listdir('data/{}'.format(dataset))
+    infiles = [x for x in infiles if ".csv" in x] # filter non csv files
     infiles = [infiles] if not isinstance(infiles,  list) else infiles # handling singles
     if not infiles == []:
         if not (limits==None):
