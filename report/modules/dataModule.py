@@ -1,15 +1,24 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+## @package dataModule
+# module to manage the data used for trigger efficiency plots
+# @note requires numpy and pandas
 
 import os
 import numpy
 import pandas
 
+
+
+## loads data from file
+# @param data TODO
+#
+# @retval dataset: blabla, optional\n TODO
 def loadData(dataset, limits=None):
     merge(dataset)
     return getData(dataset, limits)
 
 
+## descr
+# @param data TODO
 def getData(dataset, limits=None):
     data = []
 
@@ -37,11 +46,18 @@ def getData(dataset, limits=None):
     else:
         data = pandas.concat(data)
         for k in data.keys():
-            if(k in ['ID', 'run', 'lumi'] or 'HLT_' in k):
-                data[k] = data[k].astype(int)
+            if k in ['ID', 'run', 'lumi']:
+               data[k] = data[k].astype(numpy.uint32)
+            elif 'HLT_' in k:
+                data[k] = data[k].astype(numpy.uint8)
+            elif not k == 'dataset':
+                data[k] = data[k].astype(numpy.float32)
+        print (data.dtypes)
         return data
 
 
+## descr
+# @param data TODO
 def merge(dataset):
     infiles = os.listdir('IN')
 
@@ -89,6 +105,8 @@ def merge(dataset):
         print('merged {} events, found {} conflicts'.format(events, confls))
 
 
+## descr
+# @param data TODO
 def save(dtset, event, header, mask):
     path = 'data/{}/{:d}.csv'.format(dtset, int(event['run']))
 
@@ -102,15 +120,23 @@ def save(dtset, event, header, mask):
     f.close()
 
 
+## descr
+# @param data TODO
+#
+# @retval numpy_array TODO
 def getRunlist(data):
     runlist = pandas.Series(data['run'].values.ravel()).unique()
     return numpy.sort(runlist)
 
 
+## descr
+# @param data TODO
 def printRunlist(data):
     print('runlist:\n', getRunlist(data))
 
 
+## descr
+# @param data TODO
 def getLumi(data, path='data/lumi.csv'):
     runlist = getRunlist(data)
     lumilist = pandas.read_csv(path, sep=',', header=0, comment='#')
