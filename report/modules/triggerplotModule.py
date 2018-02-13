@@ -12,6 +12,9 @@ import scipy.special
 
 import modules.dataModule
 
+fitthresh = 0.8
+worklabel = 'CMS private work'
+
 def clearfile(path):
     # delete file at beginning
     f = open(path, 'w')
@@ -100,6 +103,9 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
 
     fig = matplotlib.pyplot.figure(figsize=(10, 6))
     p1 = fig.add_subplot(111)
+
+    p1.text(0.01, 0.99, worklabel, verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, size = 12, fontweight="bold")
+
     for trig in trigger:
         for dtset, lumi in zip(dataset['sets'], lumis):
             x, y, sigma = getEfficiency(data[data[dataset['key']] == dtset], trig, quant, dataset['denom'])
@@ -116,7 +122,7 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
         label = ', '.join(trigger).replace('_v', '')
     else:
         label = '{} ({})'.format(', '.join(trigger).replace('_v', ''), mask)
-    p1.set_title(label)
+    p1.set_title(label, fontweight="bold", size=14)
     p1.set_xlabel(quant['label'])
     p1.set_ylabel('efficiency')
 
@@ -136,10 +142,10 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
 
 
 def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
-    # only fit on efficiency > 0.8 on last entries connected
+    # only fit on efficiency > fitthresh on last entries connected
     mask = []
     y = True
-    for x in numpy.flip(ydata > 0.8, 0):
+    for x in numpy.flip(ydata > fitthresh, 0):
         if not x:
             y = False
         mask.append(y)
@@ -163,9 +169,15 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
         return numpy.sum(x)
 
+    # error function
     def fitfunc(x, para):
         a, b, c = para
         return 0.5 * a * ( 1 + scipy.special.erf(b * (x - c)))
+
+    # logistic function
+    #def fitfunc(x, para):
+        #a, b, c = para
+        #return a / (1 + numpy.exp(-b * (x - c)))
 
     res = scipy.optimize.minimize(lambda x: getChi2(x, xdata, ydata, sigma, fitfunc), x0=x0, tol=1e-4, method='Nelder-Mead')
 
@@ -193,7 +205,7 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
     paraerr = [getParaError(lambda x: getChi2([x, para[1], para[2]], xdata, ydata, sigma, fitfunc), para[0], esterr=0.01), getParaError(lambda x: getChi2([para[0], x, para[2]], xdata, ydata, sigma, fitfunc), para[1], esterr=0.01), getParaError(lambda x: getChi2([para[0], para[1], x], xdata, ydata, sigma, fitfunc), para[2], esterr=100)]
 
-    label = '$y = \\frac{{a}}{{2}} [1 + erf(b (x - c))]$\n$a={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$b={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$c={:.0f}^{{+{:.1f}}}_{{-{:.1f}}}$\n$\chi^2 / dof = {:.3f}/{}$\npvalue: {:.2f}\n{:.1f}%-plateau: {:.1f}'.format(para[0], *paraerr[0], para[1], *paraerr[1], para[2], *paraerr[2], Chi2, dof, pvalue, 100*cuteff, cut)
+    label = '$y = \\frac{{a}}{{2}} [1 + erf(b (x - c))]$\n$a={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$b={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$c={:.0f}^{{+{:.1f}}}_{{-{:.1f}}}$\n$\chi^2 / dof = {:.3f}/{}$\np-value: {:.2g}\n$y>${:.2f}$a$: $x>${:.1f}\n'.format(para[0], *paraerr[0], para[1], *paraerr[1], para[2], *paraerr[2], Chi2, dof, pvalue, cuteff, cut)
     if(len(xdata)>0):
         xfit = numpy.linspace(numpy.amin(xdata), numpy.amax(xdata), 1000)
     else:
@@ -241,12 +253,12 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     fig.colorbar(p1.pcolormesh(bins1, bins2, eff.T, vmin=0, cmap=cmap))
 
     if mask == '':
-        p1.set_title('{}'.format(trigger.replace('_v', '')))
+        p1.set_title('{}'.format(trigger.replace('_v', '')), fontweight="bold", size=14)
     else:
-        p1.set_title('{} ({})'.format(trigger.replace('_v', ''), mask))
+        p1.set_title('{} ({})'.format(trigger.replace('_v', ''), mask), fontweight="bold", size=14)
     p1.set_xlabel(quant1['label'])
     p1.set_ylabel(quant2['label'])
-    p1.text(0.01, 0.99, 'denominator: {}\ndatasets: {} ({:.2f} fb$^{{-1}}$)'.format(denominator.replace('_', ' '), ', '.join(datasets), lumi), verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, color='r')
+    p1.text(0.01, 0.99, 'denominator: {}\ndatasets: {} ({:.2f} fb$^{{-1}}$)'.format(denominator.replace('_', ' '), ', '.join(datasets), lumi), verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, backgroundcolor= (1., 1., 1., 0.6))
 
     p1.set_xlim(quant1['limits'][0], quant1['limits'][1])
     p1.set_ylim(quant2['limits'][0], quant2['limits'][1])
@@ -293,7 +305,7 @@ def makeRunPlot(data, dataset, trigger, quant, denominator, cuts, texpath):
     p1.set_xticklabels(runs, rotation=90, size=6)
     p1.text(0.01, 0.01, 'dataset: {}\ndenominator: {}'.format(dataset, denominator.replace('_', ' ')), verticalalignment='bottom', horizontalalignment='left', transform=p1.transAxes)
 
-    p1.set_title('{}'.format(trigger.replace('_v', '')))
+    p1.set_title('{}'.format(trigger.replace('_v', '')), fontweight="bold", size=14)
     p1.set_xlabel('runnumber')
     p1.set_ylabel('efficiency')
 
@@ -310,7 +322,7 @@ def makeRunPlot(data, dataset, trigger, quant, denominator, cuts, texpath):
     matplotlib.pyplot.close()
 
 
-#def makeEffPointPlot(data, dataset, triggers, quant, denominator, texpath, x0=[0.95, 0.005, 1000]):
+#def makeEffPointPlot(data, dataset, triggers, quant, denominator, texpath, x0=[0.95, 0.005, 1000]): #FIXME
     ## define bins
     #width = quant['limits'][2]
     #center = numpy.arange(quant['limits'][0], quant['limits'][1], width)
