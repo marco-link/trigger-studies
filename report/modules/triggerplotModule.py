@@ -1,5 +1,17 @@
-#!/#usr/bin/python3
-# -*- coding: utf-8 -*-
+## @package triggerplotModule
+# module to generate trigger efficiency plots
+# @note requires numpy, scipy and matplotlib
+
+
+## @var fitthresh
+# y-threshhold for datapoints to be considered in fitting
+fitthresh = 0.8
+
+## @var worklabel
+# label shown in the top left corner of generated plots
+worklabel = 'CMS private work'
+
+
 
 import numpy
 import matplotlib
@@ -13,42 +25,28 @@ import scipy.special
 import modules.dataModule
 
 
-####################
-fitthresh = 0.8
-worklabel = 'CMS private work'
-####################
 
-
+## clears a file; usually called before generating plots.
+# @param path   filepath of the file to clear
 def clearfile(path):
     # delete file at beginning
     f = open(path, 'w')
     f.close()
 
 
-def makeTable(data, labels, section, texpath):
-    f = open(texpath, 'a')
-    f.write('\\section*{{{}}}\n'.format(section))
-    f.write('\\begin{frame}{\insertsection}\n')
-    f.write('\\begin{center}\n')
-    f.write('\\begin{tabular}{lc}\n')
-    f.write('\\toprule\n')
-    f.write('trigger & passed\\\\ \n')
-    f.write('\midrule\n')
-    for l in labels:
-        f.write('{} & {} \\\\\n'.format(l.replace('_v', '').replace('_', '\_'), numpy.sum(data[l])))
-    f.write('\\bottomrule\n')
-    f.write('\\end{tabular}')
-    f.write('\\end{center}\n')
-    f.write('\\end{frame}\n\n')
-    f.close()
-
-
+## writes text to textfile
+# @param txt        text to write in file
+# @param textpath   path of textfile
 def write2tex(txt, texpath):
     f = open(texpath, 'a')
     f.write('{}\n'.format(txt))
     f.close()
 
 
+## writes LaTeX formated slide with graphic to textfile
+# @param name       filename of the graphic
+# @param texpath    filepath of textfile
+# @param caption    (optional) caption of the slide
 def makeSlide(name, texpath, caption=''):
     f = open(texpath, 'a')
     f.write('\\begin{frame}\n')
@@ -63,9 +61,15 @@ def makeSlide(name, texpath, caption=''):
     f.close()
 
 
+## function to calculate the asymmetric error for the trigger efficiency 
+# using Clopper-Pearson interval like defined in
+# https://de.wikipedia.org/wiki/Konfidenzintervall_f%C3%BCr_die_Erfolgswahrscheinlichkeit_der_Binomialverteilung
+# @param k      number of hits
+# @param n      number of experiments
+# @param gamma  (optional) confidence level for interval; default is one sigma (68,2%)
+#
+# @retval list  containing the lower and upper error
 def getError(k, n, gamma=0.682):
-    #clopper pearson
-    # https://de.wikipedia.org/wiki/Konfidenzintervall_f%C3%BCr_die_Erfolgswahrscheinlichkeit_der_Binomialverteilung
     alpha = 0.5 * (1-gamma)
     lower = k/n - scipy.stats.beta.ppf(alpha, k, n-k+1)
     upper = scipy.stats.beta.ppf(1-alpha, k+1, n-k) - k/n
@@ -76,6 +80,15 @@ def getError(k, n, gamma=0.682):
     return [lower, upper]
 
 
+## calculates efficiency
+# @param data           TODO
+# @param trigger        trigger TODO
+# @param quant          quantity used for x-axis
+# @param denominator    denominator used for filtering
+#
+# @retval numpy_array   center TODO
+# @retval numpy_array   eff TODO
+# @retval numpy_array   sigma TODO
 def getEfficiency(data, trigger, quant, denominator):
     # define bins
     width = quant['limits'][2]
@@ -96,6 +109,14 @@ def getEfficiency(data, trigger, quant, denominator):
     return center[mask], eff[mask], sigma
 
 
+## generates a trigger efficiency plot
+# @param dataset    TODO
+# @param trigger    TODO
+# @param quant      TODO
+# @param texpath    TODO
+# @param fit        (optional) TODO
+# @param x0       (optional) TODO
+# @param mask       (optional) TODO
 def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000], mask=''):
     data = dataset['data']
     lumis = []
@@ -126,7 +147,7 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
         label = ', '.join(trigger).replace('_v', '')
     else:
         label = '{} ({})'.format(', '.join(trigger).replace('_v', ''), mask)
-    p1.set_title(label, fontweight="bold", size=14)
+    p1.set_title(label, size=12)
     p1.set_xlabel(quant['label'])
     p1.set_ylabel('efficiency')
 
@@ -145,6 +166,20 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
     matplotlib.pyplot.close()
 
 
+## fits a modified errof function to data
+# @param xdata      TODO
+# @param ydata      TODO
+# @param sigma      TODO
+# @param x0         TODO
+# @param cuteff     (optional) TODO
+#
+# @retval           TODO bla
+# @retval           TODO bla
+# @retval           TODO bla
+# @retval           TODO bla
+# @retval           TODO bla
+# @retval           TODO bla
+# @retval           TODO bla
 def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
     # only fit on efficiency > fitthresh on last entries connected
     mask = []
@@ -218,6 +253,14 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
     return xfit, fitfunc(xfit, para), label, res.success, para, paraerr, cut
 
 
+## generates 2D trigger efficiency plots
+# @param dataset    TODO
+# @param trigger    TODO
+# @param quant1     TODO
+# @param quant2     TODO
+# @param texpath    TODO
+# @param cuts       (optional) TODO
+# @param mask       (optional) TODO
 def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     data = dataset['data']
     datasets = dataset['sets']
