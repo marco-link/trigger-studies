@@ -12,8 +12,12 @@ import scipy.special
 
 import modules.dataModule
 
+
+####################
 fitthresh = 0.8
 worklabel = 'CMS private work'
+####################
+
 
 def clearfile(path):
     # delete file at beginning
@@ -243,6 +247,8 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
 
     p1 = fig.add_subplot(111)
 
+    p1.text(0.01, 0.99, worklabel, verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, size = 12, fontweight="bold", backgroundcolor= (1., 1., 1., 0.6))
+
     eff = entries/denominatorentries
     eff[denominatorentries < 3] = numpy.nan
     eff = numpy.ma.masked_invalid(eff)
@@ -258,7 +264,7 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
         p1.set_title('{} ({})'.format(trigger.replace('_v', ''), mask), fontweight="bold", size=14)
     p1.set_xlabel(quant1['label'])
     p1.set_ylabel(quant2['label'])
-    p1.text(0.01, 0.99, 'denominator: {}\ndatasets: {} ({:.2f} fb$^{{-1}}$)'.format(denominator.replace('_', ' '), ', '.join(datasets), lumi), verticalalignment='top', horizontalalignment='left', transform=p1.transAxes, backgroundcolor= (1., 1., 1., 0.6))
+    p1.text(0.01, 0.01, 'denominator: {}\ndatasets: {} ({:.2f} fb$^{{-1}}$)'.format(denominator.replace('_', ' '), ', '.join(datasets), lumi), verticalalignment='bottom', horizontalalignment='left', transform=p1.transAxes, backgroundcolor= (1., 1., 1., 0.6))
 
     p1.set_xlim(quant1['limits'][0], quant1['limits'][1])
     p1.set_ylim(quant2['limits'][0], quant2['limits'][1])
@@ -276,50 +282,54 @@ def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     matplotlib.pyplot.close()
 
 
-def makeRunPlot(data, dataset, trigger, quant, denominator, cuts, texpath):
-    data = data[data[denominator]]
-
-    fig = matplotlib.pyplot.figure(figsize=(10, 6))
-    p1 = fig.add_subplot(111)
-    x = []
-    for run in data['run']:
-        if not run in x:
-            x.append(run)
-    runs = numpy.sort(x)
-    x = numpy.arange(len(runs))
-
-    for cut in cuts:
-        m = []
-        n = []
-        for r in runs:
-            n.append(numpy.sum(data[trigger][numpy.logical_and(data[quant['key']] > cut, data['run'] == r)]))
-            m.append(numpy.sum(data[denominator][numpy.logical_and(data[quant['key']] > cut, data['run'] == r)]))
-
-        n = numpy.array(n)
-        m = numpy.array(m)
-        sigma = getError(n, m)
-        p1.errorbar(x, n/m, yerr=sigma, fmt='.', label='{} > {}'.format(quant['label'], cut) , capsize=2)
 
 
-    p1.set_xticks(x)
-    p1.set_xticklabels(runs, rotation=90, size=6)
-    p1.text(0.01, 0.01, 'dataset: {}\ndenominator: {}'.format(dataset, denominator.replace('_', ' ')), verticalalignment='bottom', horizontalalignment='left', transform=p1.transAxes)
 
-    p1.set_title('{}'.format(trigger.replace('_v', '')), fontweight="bold", size=14)
-    p1.set_xlabel('runnumber')
-    p1.set_ylabel('efficiency')
 
-    #p1.set_ylim(-0.05, 1.05)
+#def makeRunPlot(data, dataset, trigger, quant, denominator, cuts, texpath): #FIXME
+    #data = data[data[denominator]]
 
-    p1.legend(loc=4)
-    p1.grid(alpha=0.5)
+    #fig = matplotlib.pyplot.figure(figsize=(10, 6))
+    #p1 = fig.add_subplot(111)
+    #x = []
+    #for run in data['run']:
+        #if not run in x:
+            #x.append(run)
+    #runs = numpy.sort(x)
+    #x = numpy.arange(len(runs))
 
-    #fig.tight_layout()
-    out = 'res/runcomp_{}-{}-{}-{}-{}.pdf'.format(trigger.replace('_v', ''), denominator, dataset, quant['key'])
-    makeSlide(out, texpath, caption='runcomparison for {} on {}'.format(trigger.replace('_v', ''), dataset))
-    fig.savefig(out, dpi=300, transparent=False)
-    #matplotlib.pyplot.show()
-    matplotlib.pyplot.close()
+    #for cut in cuts:
+        #m = []
+        #n = []
+        #for r in runs:
+            #n.append(numpy.sum(data[trigger][numpy.logical_and(data[quant['key']] > cut, data['run'] == r)]))
+            #m.append(numpy.sum(data[denominator][numpy.logical_and(data[quant['key']] > cut, data['run'] == r)]))
+
+        #n = numpy.array(n)
+        #m = numpy.array(m)
+        #sigma = getError(n, m)
+        #p1.errorbar(x, n/m, yerr=sigma, fmt='.', label='{} > {}'.format(quant['label'], cut) , capsize=2)
+
+
+    #p1.set_xticks(x)
+    #p1.set_xticklabels(runs, rotation=90, size=6)
+    #p1.text(0.01, 0.01, 'dataset: {}\ndenominator: {}'.format(dataset, denominator.replace('_', ' ')), verticalalignment='bottom', horizontalalignment='left', transform=p1.transAxes)
+
+    #p1.set_title('{}'.format(trigger.replace('_v', '')), fontweight="bold", size=14)
+    #p1.set_xlabel('runnumber')
+    #p1.set_ylabel('efficiency')
+
+    ##p1.set_ylim(-0.05, 1.05)
+
+    #p1.legend(loc=4)
+    #p1.grid(alpha=0.5)
+
+    ##fig.tight_layout()
+    #out = 'res/runcomp_{}-{}-{}-{}-{}.pdf'.format(trigger.replace('_v', ''), denominator, dataset, quant['key'])
+    #makeSlide(out, texpath, caption='runcomparison for {} on {}'.format(trigger.replace('_v', ''), dataset))
+    #fig.savefig(out, dpi=300, transparent=False)
+    ##matplotlib.pyplot.show()
+    #matplotlib.pyplot.close()
 
 
 #def makeEffPointPlot(data, dataset, triggers, quant, denominator, texpath, x0=[0.95, 0.005, 1000]): #FIXME
