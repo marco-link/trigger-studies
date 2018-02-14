@@ -81,14 +81,14 @@ def getError(k, n, gamma=0.682):
 
 
 ## calculates efficiency
-# @param data           TODO
-# @param trigger        trigger TODO
+# @param data           data
+# @param trigger        label of trigger or trigger combination to calculate efficiency of
 # @param quant          quantity used for x-axis
 # @param denominator    denominator used for filtering
 #
-# @retval numpy_array   center TODO
-# @retval numpy_array   eff TODO
-# @retval numpy_array   sigma TODO
+# @retval numpy_array   center of bin
+# @retval numpy_array   efficiency
+# @retval numpy_array   asymmetric error interval
 def getEfficiency(data, trigger, quant, denominator):
     # define bins
     width = quant['limits'][2]
@@ -109,14 +109,24 @@ def getEfficiency(data, trigger, quant, denominator):
     return center[mask], eff[mask], sigma
 
 
-## generates a trigger efficiency plot
-# @param dataset    TODO
-# @param trigger    TODO
-# @param quant      TODO
-# @param texpath    TODO
-# @param fit        (optional) TODO
-# @param x0       (optional) TODO
-# @param mask       (optional) TODO
+## generates a trigger efficiency plot for list of triggers on different subsets and writes a LaTeX formatted slide to textfile
+# @param dataset    dict with entries:
+# \n data:   Pandas dataframe loaded with the dataModule
+# \n label:  label of the dataset to use for filename
+# \n key:    key where the subsets are stored
+# \n sets:   list with labels of the subsets
+# \n denom:  label of the denominator or combination of denominator
+# \n\n e.g. data={'data': data, 'label': 'SingleMuon', 'key': 'dataset', 'sets': ['SingleMuon-postfix'], 'denom': 'Mu50_OR_IsoMu27'}
+# @param trigger    list of trigger to generate efficiency plots of
+# @param quant      dict with entries:
+# \n key:       key of the quantity used as x-axis
+# \n label:     label used for x-axis label; can use LaTeX commands
+# \n limits:    list with lower, upper limits and stepsize for bins
+# \n\n e.g. quant={'key': 'Mjj', 'label': 'invariant dijetmass $M_{jj}$ in GeV', 'limits': [500, 2000, 30]}
+# @param texpath    path to textfile
+# @param fit        (optional) enables fit of modified errorfunction
+# @param x0         (optional) startparameter for fit
+# @param mask       (optional) additional mask to apply to data
 def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000], mask=''):
     data = dataset['data']
     lumis = []
@@ -166,20 +176,21 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
     matplotlib.pyplot.close()
 
 
-## fits a modified errof function to data
-# @param xdata      TODO
-# @param ydata      TODO
-# @param sigma      TODO
-# @param x0         TODO
-# @param cuteff     (optional) TODO
+## fits a modified error function to data
+# @param xdata      x value of datapoints
+# @param ydata      y value of datapoints
+# @param sigma      asymmetric uncertainity
+# @param x0         startparameter for fit
+# @param cuteff     (optional) value used to determine the plateau point (efficiency>cuteff)
 #
-# @retval           TODO bla
-# @retval           TODO bla
-# @retval           TODO bla
-# @retval           TODO bla
-# @retval           TODO bla
-# @retval           TODO bla
-# @retval           TODO bla
+# @retval           numpy_array     x value of fit
+# @retval           numpy_array     y value of fit
+# @retval           str             fitlabel
+# @retval           bool            fit succeded
+# @retval           list            best parameter estimation
+# @retval           list            uncertainity of parameter estimation
+# @retval           float           x value where fit reaches cuteff
+ res.success, para, paraerr, cut
 def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
     # only fit on efficiency > fitthresh on last entries connected
     mask = []
@@ -254,13 +265,13 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
 
 ## generates 2D trigger efficiency plots
-# @param dataset    TODO
-# @param trigger    TODO
-# @param quant1     TODO
-# @param quant2     TODO
-# @param texpath    TODO
-# @param cuts       (optional) TODO
-# @param mask       (optional) TODO
+# @param dataset    same as dataset in doEffPlot(), but subsets are combined and not shown separately
+# @param trigger    label of trigger
+# @param quant1     dict used for x axis (same format as quant in doEffPlot())
+# @param quant2     dict used for y axis (same format as quant in doEffPlot())
+# @param texpath    path to textfile
+# @param cuts       (optional) shows cuts with red lines in plot; e.g. [[-1, 10000],[65, 105]]
+# @param mask       (optional) additional mask to apply to data
 def do2DPlot(dataset,  trigger, quant1, quant2, texpath, cuts=None, mask=''):
     data = dataset['data']
     datasets = dataset['sets']

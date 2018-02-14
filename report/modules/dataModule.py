@@ -8,17 +8,21 @@ import pandas
 
 
 
-## loads data from file
-# @param data TODO
+## loads data; runs merge() before loading
+# @param dataset    name of the dataset to load; there should be a similar names folder in data
+# @param limits     (optional) list containing the lower and upper limit for the runnumber to load
 #
-# @retval dataset: blabla, optional\n TODO
+# @retval pandas_DataFrame loaded data
 def loadData(dataset, limits=None):
     merge(dataset)
     return getData(dataset, limits)
 
 
-## descr
-# @param data TODO
+## loads data; use loadData() to process new files from the IN folder
+# @param dataset    name of the dataset to load; there should be a similar names folder in data
+# @param limits     (optional) list containing the lower and upper limit for the runnumber to load
+#
+# @retval pandas_DataFrame loaded data
 def getData(dataset, limits=None):
     data = []
 
@@ -56,8 +60,9 @@ def getData(dataset, limits=None):
         return data
 
 
-## descr
-# @param data TODO
+## splits *.csv files from the IN folder into files with there runnumber in the data/dataset/ folder;
+# after succesfull run the files are moved from the IN folder to data/raw
+# @param dataset     name of the dataset to merge (the file in the folder IN should contain this in their filename)
 def merge(dataset):
     infiles = os.listdir('IN')
 
@@ -105,8 +110,11 @@ def merge(dataset):
         print('merged {} events, found {} conflicts'.format(events, confls))
 
 
-## descr
-# @param data TODO
+## write single event to file
+# @param dtset      name of the dataset
+# @param event      array containing data of one event
+# @param header     header for the file (only used if file does not exist)
+# @param mask       mask to write event in file, e.g. mask='{:.3f}, {:.3f}, {:.3f}, {:.0f}, {:.0f}'
 def save(dtset, event, header, mask):
     path = 'data/{}/{:d}.csv'.format(dtset, int(event['run']))
 
@@ -120,23 +128,26 @@ def save(dtset, event, header, mask):
     f.close()
 
 
-## descr
-# @param data TODO
+## generates a runlist containing all runs present in the dataset
+# @param data pandas_DataFrame like loaded with this module
 #
-# @retval numpy_array TODO
+# @retval numpy_array sorted runlist
 def getRunlist(data):
     runlist = pandas.Series(data['run'].values.ravel()).unique()
     return numpy.sort(runlist)
 
 
-## descr
-# @param data TODO
+## prints runlist; the list is generated using getRunlist()
+# @param data pandas_DataFrame like loaded with this module
 def printRunlist(data):
     print('runlist:\n', getRunlist(data))
 
 
-## descr
-# @param data TODO
+## calculates luminosity of data
+# @param data pandas_DataFrame to calculate luminosity of
+# @param path (optional) path to lumifile e.g. generated with BRIL
+#
+# @retval float luminosity in 1/fb
 def getLumi(data, path='data/lumi.csv'):
     runlist = getRunlist(data)
     lumilist = pandas.read_csv(path, sep=',', header=0, comment='#')
