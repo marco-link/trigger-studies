@@ -9,7 +9,7 @@ fitthresh = 0.8
 
 ## @var worklabel
 # label shown in the top left corner of generated plots
-worklabel = 'CMS private work'
+worklabel = ''
 
 
 

@@ -6,8 +6,12 @@ import modules.dataModule
 import numpy
 import pandas
 
+modules.triggerplotModule.worklabel = 'CMS private work'
+
 def JetCuts(data):
     return (data > 65) & (data < 105)
+
+
 
 
 # quantities settings
