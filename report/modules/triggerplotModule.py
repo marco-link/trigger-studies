@@ -203,6 +203,8 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
     xdata = xdata[mask]
     ydata = ydata[mask]
+    sigma[0] = sigma[0][mask]
+    sigma[1] = sigma[1][mask]
 
     def getChi2(para, xdata, ydata, error, func):
         low, up = error
