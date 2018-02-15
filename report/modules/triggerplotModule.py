@@ -190,7 +190,6 @@ def doEffPlot(dataset, trigger, quant, texpath, fit=False, x0=[0.9, 0.005, 1000]
 # @retval           list            best parameter estimation
 # @retval           list            uncertainity of parameter estimation
 # @retval           float           x value where fit reaches cuteff
- res.success, para, paraerr, cut
 def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
     # only fit on efficiency > fitthresh on last entries connected
     mask = []
