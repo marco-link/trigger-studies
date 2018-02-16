@@ -241,8 +241,9 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
     pvalue = scipy.stats.chi2.sf(Chi2, dof)
 
     a, b, c = para
-    cut = c - numpy.log(1/cuteff - 1)/b
-    cut = scipy.special.erfinv(2*cuteff - 1) / b + c
+    #cut = c - numpy.log(1/cuteff - 1)/b # for logistic function?
+    cut = scipy.special.erfinv(2*cuteff/a - 1) / b + c
+
 
     # estimate error on parameters
     def getParaError(func, value, esterr=1):
@@ -256,7 +257,7 @@ def doFit(xdata, ydata, sigma, x0, cuteff=0.99):
 
     paraerr = [getParaError(lambda x: getChi2([x, para[1], para[2]], xdata, ydata, sigma, fitfunc), para[0], esterr=0.01), getParaError(lambda x: getChi2([para[0], x, para[2]], xdata, ydata, sigma, fitfunc), para[1], esterr=0.01), getParaError(lambda x: getChi2([para[0], para[1], x], xdata, ydata, sigma, fitfunc), para[2], esterr=100)]
 
-    label = '$y = \\frac{{a}}{{2}} [1 + erf(b (x - c))]$\n$a={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$b={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$c={:.0f}^{{+{:.1f}}}_{{-{:.1f}}}$\n$\chi^2 / dof = {:.3f}/{}$\np-value: {:.2g}\n$y>${:.2f}$a$: $x>${:.1f}\n'.format(para[0], *paraerr[0], para[1], *paraerr[1], para[2], *paraerr[2], Chi2, dof, pvalue, cuteff, cut)
+    label = '$y = \\frac{{a}}{{2}} [1 + erf(b (x - c))]$\n$a={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$b={:.3f}^{{+{:.3f}}}_{{-{:.3f}}}$\n$c={:.0f}^{{+{:.1f}}}_{{-{:.1f}}}$\n$\chi^2 / dof = {:.3f}/{}$\np-value: {:.2g}\n$y>${:.2f}: $x>${:.1f}\n'.format(para[0], *paraerr[0], para[1], *paraerr[1], para[2], *paraerr[2], Chi2, dof, pvalue, cuteff, cut)
     if(len(xdata)>0):
         xfit = numpy.linspace(numpy.amin(xdata), numpy.amax(xdata), 1000)
     else:
