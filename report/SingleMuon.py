@@ -16,12 +16,12 @@ def JetCuts(data):
 
 # quantities settings
 HT = {'key': 'HT', 'label': 'HT in GeV', 'limits': [500, 2000, 30]}
-Mjj = {'key': 'Mjj', 'label': 'invariant dijetmass $M_{jj}$ in GeV', 'limits': [500, 2000, 30]}
+Mjj = {'key': 'Mjj', 'label': 'dijet invariant mass $M_{jj}$ in GeV', 'limits': [500, 2000, 30]}
 
 pt1 = {'key': 'pt1', 'label': 'leading jet $p_t$', 'limits': [0, 1000, 20]}
 pt2 = {'key': 'pt2', 'label': 'subleading jet $p_t$', 'limits': [0, 1000, 20]}
-softdrop1 = {'key': 'softdrop1', 'label': 'leading jet softdropmass in GeV', 'limits': [0, 200, 5]}
-softdrop2 = {'key': 'softdrop2', 'label': 'subleading jet softdropmass in GeV', 'limits': [0, 200, 5]}
+softdrop1 = {'key': 'softdrop1', 'label': 'leading jet softdrop mass in GeV', 'limits': [0, 200, 5]}
+softdrop2 = {'key': 'softdrop2', 'label': 'subleading jet softdrop mass in GeV', 'limits': [0, 200, 5]}
 
 eta1 = {'key': 'eta1', 'label': 'leading jet $\\eta$', 'limits': [-2.5, 2.5, 0.1]}
 eta2 = {'key': 'eta2', 'label': 'subleading jet $\\eta$', 'limits': [-2.5, 2.5, 0.1]}
