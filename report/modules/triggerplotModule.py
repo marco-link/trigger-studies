@@ -117,7 +117,7 @@ def getEfficiency(data, trigger, quant, denominator):
 # \n sets:   list with labels of the subsets
 # \n denom:  label of the denominator or combination of denominator
 # \n\n e.g. data={'data': data, 'label': 'SingleMuon', 'key': 'dataset', 'sets': ['SingleMuon-postfix'], 'denom': 'Mu50_OR_IsoMu27'}
-# @param trigger    list of trigger to generate efficiency plots of
+# @param trigger    list of triggers to generate efficiency plots of
 # @param quant      dict with entries:
 # \n key:       key of the quantity used as x-axis
 # \n label:     label used for x-axis label; can use LaTeX commands
