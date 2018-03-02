@@ -60,7 +60,7 @@ def getData(dataset, limits=None):
         return data
 
 
-## splits *.csv files from the IN folder into files with there runnumber in the data/dataset/ folder;
+## splits *.csv files from the IN folder into files with their runnumber in the data/dataset/ folder;
 # after succesfull run the files are moved from the IN folder to data/raw
 # @param dataset     name of the dataset to merge (the file in the folder IN should contain this in their filename)
 def merge(dataset):
